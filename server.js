@@ -11,6 +11,12 @@ let globalCounter = 0;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+    res.setHeader("Content-Security-Policy", "default-src 'self' https://vercel.live; script-src 'self' https://vercel.live");
+    next();
+});
+
+
 app.post('/increment-global-counter', (req, res) => {
     globalCounter++;
     broadcastGlobalCounter();
