@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click to Show Mouth</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        .image-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .counter {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        #globalCounter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 1.5rem;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="image-container" id="imageContainer">
+        <!-- Static image displayed initially -->
+        <img src="static.png" alt="Click Me!" width="300" height="300" id="clickableImage">
+        <div class="counter" id="clickCounter">0</div>
+    </div>
+
+    <div id="globalCounter">Global Clicks: 0</div>
+
+    <script>
+        let localCount = 0;
+        let globalCount = 0;
+        let isClicked = false;
+
+        const clickCounter = document.getElementById('clickCounter');
+        const globalCounter = document.getElementById('globalCounter');
+        const clickableImage = document.getElementById('clickableImage');
+
+        // Image sources for static and mouth images
+        const staticImageSrc = 'static.png';
+        const mouthImageSrc = 'mouth.png';
+
+        function updateLocalCounter() {
+            localCount++;
+            clickCounter.textContent = localCount;
+        }
+
+        function updateGlobalCounter(newGlobalCount) {
+            globalCount = newGlobalCount;
+            globalCounter.textContent = `Global Clicks: ${globalCount}`;
+        }
+
+        // Click event for toggling between static and mouth image
+        clickableImage.addEventListener('click', () => {
+            if (!isClicked) {
+                clickableImage.src = mouthImageSrc;
+                isClicked = true;
+
+                setTimeout(() => {
+                    clickableImage.src = staticImageSrc;
+                    isClicked = false;
+                }, 200); // Adjust delay as needed for the quick switch effect
+            }
+            
+            updateLocalCounter();
+
+            // Increment the global counter
+            fetch('/increment-global-counter', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateGlobalCounter(data.globalCount);
+            })
+            .catch(err => console.error('Error updating global counter:', err));
+        });
+
+        const ws = new WebSocket('ws://localhost:3000');
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            updateGlobalCounter(data.globalCount);
+        };
+    </script>
+</body>
+</html>
