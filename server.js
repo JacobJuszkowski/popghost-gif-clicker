@@ -23,7 +23,13 @@ app.post('/increment-global-counter', (req, res) => {
     res.json({ globalCount: globalCounter });
 });
 
-app.use(express.static('public'));
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, 'public')));
+
+// If no route matches, serve the main index.html for the root route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 wss.on('connection', (ws) => {
     console.log('New client connected');
