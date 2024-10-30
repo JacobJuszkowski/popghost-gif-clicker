@@ -28,6 +28,14 @@
         const staticImageSrc = 'static.png';
         const mouthImageSrc = 'mouth.png';
 
+        // Initial fetch to load the global count on page load
+        fetch('/get-global-counter')
+            .then(response => response.json())
+            .then(data => {
+                updateGlobalCounter(data.globalCount);
+            });
+
+
         function updateLocalCounter() {
             localCount++;
             clickCounter.textContent = localCount;
