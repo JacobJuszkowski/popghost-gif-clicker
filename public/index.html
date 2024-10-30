@@ -63,7 +63,7 @@
             .catch(err => console.error('Error updating global counter:', err));
         });
 
-        const ws = new WebSocket('ws://localhost:3000');
+        const ws = new WebSocket(`ws://${window.location.host}`);
         ws.onmessage = (event) => {
             const data = JSON.parse(event.data);
             updateGlobalCounter(data.globalCount);
