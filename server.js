@@ -13,7 +13,10 @@ let globalCounter = 0;
 app.use(express.json());
 
 app.use((req, res, next) => {
-    res.setHeader("Content-Security-Policy", "default-src 'self' https://vercel.live; script-src 'self' https://vercel.live");
+    res.setHeader(
+        "Content-Security-Policy",
+        "default-src 'self' https://vercel.live; script-src 'self' https://vercel.live; style-src 'self' 'unsafe-inline'"
+    );
     next();
 });
 
